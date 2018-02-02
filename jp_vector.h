@@ -11,6 +11,7 @@
 // Includes
 ///////////////////////////////////////////////////////////////////////////////
 #include <stdlib.h>
+#include <string.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 // Functions
@@ -143,11 +144,10 @@ void jpVector__erase(char *data, size_t length, size_t size, size_t index);
 ///////////////////////////////////////////////////////////////////////////////
 #define jpVector_erase(vec,index)\
     (\
-        jpVector__erase(\
-            (char *)((vec).data),\
-            (vec).length,\
-            sizeof(*(vec).data),\
-            index),\
+        memmove(\
+            (vec).data + (sizeof(*(vec).data) * index),\
+            (vec).data + (sizeof(*(vec).data) * (index + 1)),\
+            ((vec).length - index) * sizeof(*(vec).data)),\
         --(vec).length,\
         0\
     )
