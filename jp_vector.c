@@ -20,7 +20,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-void cfVector__erase(char *data, size_t length, size_t size, size_t index)
+void jfVector__erase(char *data, size_t length, size_t size, size_t index)
 {
 #ifndef JP_NOLOG
     jpLog_exitIf(!data, "NULL argument");
