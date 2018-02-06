@@ -33,12 +33,42 @@
 /// - NOTE that if the log function in question is a member of the *exit*
 ///     variety and is being used along the vein of an assertion, then
 ///     jpLog_*If should always be used to ensure that these types of checks
-///     can be easily removed for production builds
+///     can be easily removed for production builds. Prefer separating these
+///     calls into two statements if the conditional causes a line break,
+///     i.e.
+///     
+///     jpLog_exitIf(!(some_variable = some_function__create()),
+///             "Failed to create some_variable");
 ///
-/// @TODO Add an API for logging to a file
+///     should be
+///
+///     some_variable = some_variable__create();
+///     jpLog_exitIf(!some_variable, "Failed to create some_variable");
+///
+///     Also note that this should ALWAYS be done for conditionals checking
+///     the results of any form of memory allocation. If calls to functions
+///     like malloc or calloc happen within a jpLog_* function, Valgrind gets
+///     fussy.
+///
+/// @TODO Add an API for setting output stream and logging to a file
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef JPA__LOG_H
 #define JPA__LOG_H
+
+///////////////////////////////////////////////////////////////////////////////
+// Necessary to allow log macros to be used as expressions
+///////////////////////////////////////////////////////////////////////////////
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-value"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#endif
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-value"
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // Includes
@@ -55,14 +85,14 @@
 /// @param	file	Name of the current file
 /// @param	func	Name of the current function
 /// @param	line	Current line number
-/// @param	msg		Format string
+/// @param	fmt     Format string
 /// @param	...		Format arguments
 ///////////////////////////////////////////////////////////////////////////////
 void jpLog__info (
         const char *file,
         const char *func,
         int line,
-        const char *msg,
+        const char *fmt,
         ...);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,14 +101,14 @@ void jpLog__info (
 /// @param	file	Name of the current file
 /// @param	func	Name of the current function
 /// @param	line	Current line number
-/// @param	msg		Format string
+/// @param	fmt     Format string
 /// @param	...		Format arguments
 ///////////////////////////////////////////////////////////////////////////////
 void jpLog__warn(
         const char *file,
         const char *func,
         int line,
-        const char *msg,
+        const char *fmt,
         ...);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -87,14 +117,14 @@ void jpLog__warn(
 /// @param	file	Name of the current file
 /// @param	func	Name of the current function
 /// @param	line	Current line number
-/// @param	msg		Format string
+/// @param	fmt     Format string
 /// @param	...		Format arguments
 ///////////////////////////////////////////////////////////////////////////////
 void jpLog__exit(
         const char *file,
         const char *func,
         int line,
-        const char *msg,
+        const char *fmt,
         ...);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -244,5 +274,12 @@ void jpLog__exit(
 
 #endif
 
-// JPA__LOG_H
+// #pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#pragma clang diagnostic pop
+// #pragma clang diagnostic ignored "-Wunused-value"
+#pragma clang diagnostic pop
+// #pragma GCC diagnostic ignored "-Wunused-value"
+#pragma GCC diagnostic pop
+
+// ifndef JPA__LOG_H
 #endif

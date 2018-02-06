@@ -18,18 +18,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Removes an entry at a particular index in the jpVector
-///
-/// Called internally by jpVector macros.
-///
-/// @param data     Pointer to jpVector data
-/// @param length   Number of elements in the jpVector
-/// @param size     Size in bytes of a single element
-/// @param index    Index of the element to remove
-///////////////////////////////////////////////////////////////////////////////
-void jpVector__erase(char *data, size_t length, size_t size, size_t index);
-
-///////////////////////////////////////////////////////////////////////////////
 // Macros
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -61,8 +49,7 @@ void jpVector__erase(char *data, size_t length, size_t size, size_t index);
     (\
         (vec).length = 0,\
         (vec).max = JP_VECTOR_BASESIZE,\
-        (vec).data = calloc((vec).max, sizeof(*(vec).data)),\
-        0\
+        (vec).data = calloc(JP_VECTOR_BASESIZE, sizeof(*(vec).data))\
     )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -70,7 +57,7 @@ void jpVector__erase(char *data, size_t length, size_t size, size_t index);
 ///
 /// @param vec  The jpVector
 ///////////////////////////////////////////////////////////////////////////////
-#define jpVector_destroy(vec)   ( free((vec).data), (vec).data = NULL, 0 )
+#define jpVector_destroy(vec)   ( free((vec).data), (vec).data = NULL )
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Returns the length of a jpVector (number of used elements)
@@ -95,9 +82,8 @@ void jpVector__erase(char *data, size_t length, size_t size, size_t index);
 ///////////////////////////////////////////////////////////////////////////////
 #define jpVector__expand(vec)\
     (\
-        (vec).max *= 2,\
-        (vec).data = realloc((vec).data, sizeof(*(vec).data) * (vec).max),\
-        0\
+        (vec).max += (vec).max / 2,\
+        (vec).data = realloc((vec).data, sizeof(*(vec).data) * (vec).max)\
     )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -124,8 +110,7 @@ void jpVector__erase(char *data, size_t length, size_t size, size_t index);
 #define jpVector_push(vec,value)\
     (\
         (vec).length == (vec).max ? jpVector__expand(vec) : 0,\
-        (vec).data[(vec).length++] = (value),\
-        0\
+        (vec).data[(vec).length++] = (value)\
     )
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -134,8 +119,8 @@ void jpVector__erase(char *data, size_t length, size_t size, size_t index);
 /// @param vec  The jpVector
 /// @return The value popped
 ///////////////////////////////////////////////////////////////////////////////
-#define jpVector_pop(vec)       ( (vec).data[--(vec).length] )
-
+#define jpVector_pop(vec) ( (vec).data[(vec).length--] )
+            
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Removes an entry at a particular index in the jpVector
 ///
@@ -148,8 +133,7 @@ void jpVector__erase(char *data, size_t length, size_t size, size_t index);
             (vec).data + (sizeof(*(vec).data) * index),\
             (vec).data + (sizeof(*(vec).data) * (index + 1)),\
             ((vec).length - index) * sizeof(*(vec).data)),\
-        --(vec).length,\
-        0\
+        --(vec).length\
     )
 
 // JPA__VECTOR_H

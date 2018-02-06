@@ -17,11 +17,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Size of buffer for jpLog_*Fmt* functions
-///////////////////////////////////////////////////////////////////////////////
-#define MSGBUFF_SIZE 1024
-
-///////////////////////////////////////////////////////////////////////////////
 // Public functions
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -30,24 +25,18 @@ void jpLog__info(
         const char *file,
         const char *func,
         int line,
-        const char *msg,
+        const char *fmt,
         ...)
 {
     va_list ap;
-    char msgbuff[MSGBUFF_SIZE];
 
-    va_start(ap, msg);
-    vsprintf(msgbuff, msg, ap);
+    fprintf(stdout, "[INFO][%s][%s][%d]: ", file, func, line);
+
+    va_start(ap, fmt);
+    vfprintf(stdout, fmt, ap);
     va_end(ap);
 
-    fprintf(
-            stdout,
-            "[\33[34;1mINFO\33[0m][%s][%s][%d]: %s\n",
-            file,
-            func,
-            line,
-            msgbuff
-            );
+    fprintf(stdout, "\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,24 +44,18 @@ void jpLog__warn(
         const char *file,
         const char *func,
         int line,
-        const char *msg,
+        const char *fmt,
         ...)
 {
     va_list ap;
-    char msgbuff[MSGBUFF_SIZE];
 
-    va_start(ap, msg);
-    vsprintf(msgbuff, msg, ap);
+    fprintf(stderr, "[WARN][%s][%s][%d]: ", file, func, line);
+
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
     va_end(ap);
 
-    fprintf(
-            stderr,
-            "[\33[33;1mWARN\33[0m][%s][%s][%d]: %s\n",
-            file,
-            func,
-            line,
-            msgbuff
-            );
+    fprintf(stderr, "\n");
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,24 +63,18 @@ void jpLog__exit(
         const char *file,
         const char *func,
         int line,
-        const char *msg,
+        const char *fmt,
         ...)
 {
     va_list ap;
-    char msgbuff[MSGBUFF_SIZE];
 
-    va_start(ap, msg);
-    vsprintf(msgbuff, msg, ap);
+    fprintf(stderr, "[EXIT][%s][%s][%d]: ", file, func, line);
+
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
     va_end(ap);
 
-    fprintf(
-            stderr,
-            "[\33[31;1mEXIT\33[0m][%s][%s][%d]: %s\n",
-            file,
-            func,
-            line,
-            msgbuff
-            );
+    fprintf(stderr, "\n");
 
     exit(EXIT_FAILURE);
 }
