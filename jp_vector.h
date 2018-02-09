@@ -22,9 +22,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Initial maximum length of a jpVector
+/// @brief Initial maximum length of a jpVector - cannot be < 2
 ///////////////////////////////////////////////////////////////////////////////
-#define JP_VECTOR_BASESIZE      (64)
+#define JP_VECTOR_BASESIZE      (2)
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Declare a new jpVector
@@ -80,7 +80,7 @@
 ///
 /// @param vec  The jpVector
 ///////////////////////////////////////////////////////////////////////////////
-#define jpVector__expand(vec)\
+#define jpVector_expand(vec)\
     (\
         (vec).max += (vec).max / 2,\
         (vec).data = realloc((vec).data, sizeof(*(vec).data) * (vec).max)\
@@ -109,7 +109,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #define jpVector_push(vec,value)\
     (\
-        (vec).length == (vec).max ? jpVector__expand(vec) : 0,\
+        ((vec).length == (vec).max) ? jpVector_expand(vec) : 0,\
         (vec).data[(vec).length++] = (value)\
     )
 
@@ -120,7 +120,7 @@
 /// @return The value popped
 ///////////////////////////////////////////////////////////////////////////////
 #define jpVector_pop(vec) ( (vec).data[(vec).length--] )
-            
+
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Removes an entry at a particular index in the jpVector
 ///
@@ -130,8 +130,8 @@
 #define jpVector_erase(vec,index)\
     (\
         memmove(\
-            (vec).data + (sizeof(*(vec).data) * index),\
-            (vec).data + (sizeof(*(vec).data) * (index + 1)),\
+            (vec).data + (index),\
+            (vec).data + (index + 1),\
             ((vec).length - index) * sizeof(*(vec).data)),\
         --(vec).length\
     )
